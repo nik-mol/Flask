@@ -3,6 +3,7 @@ from flask.views import MethodView
 from database import Session, AdvertisementModel
 from errors import HttpExeption
 from schema import validate, AdvertisementSchema
+from sqlalchemy.exc import IntegrityError
 
 app = Flask('app')
 
@@ -30,7 +31,7 @@ def get_advertisement(advertisement_id: int, session: Session) -> AdvertisementM
 class Advertisement(MethodView):
 
   def get(self, advertisement_id: int):
-    with Session as session:
+    with Session() as session:
       advertisement = get_advertisement(advertisement_id, session)
       return jsonify({
         'id': advertisement_id,
@@ -41,7 +42,7 @@ class Advertisement(MethodView):
 
   def patch(self, advertisement_id: int):
      json_data = validate(request.json, AdvertisementSchema) 
-     with Session as session:
+     with Session() as session:
         advertisement = get_advertisement(advertisement_id, session)
         for field, value in json_data.items():
           setattr(advertisement, field, value) 
@@ -51,23 +52,23 @@ class Advertisement(MethodView):
 
   def post(self):
     advertisement_data = validate(request.json, AdvertisementSchema)    
-    with Session as session:
+    with Session() as session:
       new_advertisement = AdvertisementModel(**advertisement_data)
       session.add(new_advertisement)
       try:
         session.commit()
-      except IndentationError:
+      except IntegrityError:
         raise HttpExeption(409, 'email alredy exists')
       return jsonify({'id': new_advertisement.id})
 
   def delete(self, advertisement_id:int):
-    with Session as session:
+    with Session() as session:
       advertisement = get_advertisement(advertisement_id, session)
       session.delete(advertisement)
       session.commit()
       return jsonify({'status': 'success'})
 
-app.add_url_rule('/advertisements/<int:advertisement_id>', view_func=Advertisement.as_view('advertisements'), methods=['GET', 'PATH', 'DELETE'])
+app.add_url_rule('/advertisements/<int:advertisement_id>', view_func=Advertisement.as_view('advertisements'), methods=['GET', 'PATCH', 'DELETE'])
 app.add_url_rule('/advertisements/', view_func=Advertisement.as_view('create_advertisement'), methods=['POST'])
 
 if __name__ == '__main__':

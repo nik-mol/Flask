@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine 
 import atexit 
 
-PG_DSN = 'postgresql://nikolay:310585@127.0.0.1:5432/flask_advertisement' 
+PG_DSN = 'postgresql://nikolay:310585@127.0.0.1:5431/flask_advertisement' 
 engine = create_engine(PG_DSN) 
 Base = declarative_base() 
 

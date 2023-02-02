@@ -1,16 +1,16 @@
 import requests
 
-response = requests.post('http://127.0.0.1:5000/users/',
-                        json={'email': 'nikolay@yandex.ru', 'password': '310585'}                      
+response = requests.post('http://127.0.0.1:5000/advertisements/',
+                        json={'title': 'python', 'description': 'back language', 'owner': 'nikolay'}                      
                         )
 
-response = requests.patch('http://127.0.0.1:5000/users/1',
-                        json={'email': 'new_nikolay@yandex.ru', 'password': '31058511'}                      
+response = requests.patch('http://127.0.0.1:5000/advertisements/1',
+                        json={'title': 'java', 'description': 'front language', 'owner': 'olesya'}  
                         )
 
-response = requests.get('http://127.0.0.1:5000/users/1')                                      
+response = requests.get('http://127.0.0.1:5000/advertisements/1')                                      
 
-response = requests.delete('http://127.0.0.1:5000/users/1')                                      
+response = requests.delete('http://127.0.0.1:5000/advertisements/1')                                      
                         
 
 
