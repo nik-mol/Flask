@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask.views import MethodView
 from database import Session, AdvertisementModel
 from errors import HttpExeption
-from schema import validate, AdvertisementSchema
+from schema import validate, CreateAdvertisementSchema, PutchAdvertisementSchema
 from sqlalchemy.exc import IntegrityError
 
 app = Flask('app')
@@ -41,7 +41,7 @@ class Advertisement(MethodView):
       })
 
   def patch(self, advertisement_id: int):
-     json_data = validate(request.json, AdvertisementSchema) 
+     json_data = validate(request.json, PutchAdvertisementSchema) 
      with Session() as session:
         advertisement = get_advertisement(advertisement_id, session)
         for field, value in json_data.items():
@@ -51,14 +51,14 @@ class Advertisement(MethodView):
         return jsonify({'status': 'success'})
 
   def post(self):
-    advertisement_data = validate(request.json, AdvertisementSchema)    
+    advertisement_data = validate(request.json, CreateAdvertisementSchema)    
     with Session() as session:
       new_advertisement = AdvertisementModel(**advertisement_data)
       session.add(new_advertisement)
       try:
         session.commit()
       except IntegrityError:
-        raise HttpExeption(409, 'email alredy exists')
+        raise HttpExeption(409, 'title alredy exists')
       return jsonify({'id': new_advertisement.id})
 
   def delete(self, advertisement_id:int):
